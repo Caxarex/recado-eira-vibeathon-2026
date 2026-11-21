@@ -65,7 +65,7 @@ export default function DetalleEntrega() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Encabezado titulo="Entrega segura y seguimiento" desc="Última etapa del recorrido." />
       <AvisoRol requerido="Trabajo social" actual={rol} />
       <PanelResultado resultado={r} />
@@ -81,11 +81,11 @@ export default function DetalleEntrega() {
           </CardHeader>
           <CardContent>
             {siguiente ? (
-              <Button variant="outline" render={<Link href={siguiente} />}>
+              <Button variant="outline" nativeButton={false} render={<Link href={siguiente} />}>
                 Ir al paso que corresponde
               </Button>
             ) : (
-              <Button variant="outline" render={<Link href={`/expedientes/${r.expedienteId}`} />}>
+              <Button variant="outline" nativeButton={false} render={<Link href={`/expedientes/${r.expedienteId}`} />}>
                 Volver al expediente
               </Button>
             )}
@@ -103,7 +103,7 @@ export default function DetalleEntrega() {
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                className="size-4 accent-pink-600"
+                className="size-5 accent-brand-wine"
                 checked={identificacion}
                 disabled={!esTS}
                 onChange={(e) => setIdentificacion(e.target.checked)}
@@ -157,7 +157,7 @@ export default function DetalleEntrega() {
       )}
 
       {r.seguimiento && (
-        <Card className="border-pink-300">
+        <Card className="border-brand-rose-soft bg-brand-rose-pale/40">
           <CardHeader>
             <CardTitle className="text-base">Seguimiento programado</CardTitle>
           </CardHeader>

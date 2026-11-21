@@ -8,7 +8,7 @@ export default function Revision() {
   const { resultados, hidratado } = useRepositorio();
   if (!hidratado) return null;
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Encabezado
         titulo="Bandeja de revisión"
         desc="Resultados cargados que esperan verificación documental por el Revisor."

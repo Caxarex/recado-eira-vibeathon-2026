@@ -8,7 +8,7 @@ export default function Autorizaciones() {
   const { resultados, rol, hidratado } = useRepositorio();
   if (!hidratado) return null;
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Encabezado
         titulo="Autorizaciones clínicas"
         desc="Resultados revisados que requieren autorización por un médico humano."

@@ -1,4 +1,14 @@
-import { Badge } from "@/components/ui/badge";
+import {
+  AlertCircle,
+  Bell,
+  CheckCircle2,
+  ClipboardList,
+  FileUp,
+  HeartHandshake,
+  PackageCheck,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 import type { ClasificacionBethesda, EstadoResultado } from "@/contracts/types";
 import { cn } from "@/lib/utils";
 
@@ -12,39 +22,51 @@ export const ETIQUETA_ESTADO: Record<EstadoResultado, string> = {
   en_seguimiento: "En seguimiento",
 };
 
-const COLOR_ESTADO: Record<EstadoResultado, string> = {
-  cargado: "bg-slate-100 text-slate-800 border-slate-200",
-  en_revision: "bg-amber-100 text-amber-900 border-amber-200",
-  autorizado: "bg-emerald-100 text-emerald-900 border-emerald-200",
-  rechazado: "bg-red-100 text-red-900 border-red-200",
-  notificado: "bg-sky-100 text-sky-900 border-sky-200",
-  entregado: "bg-violet-100 text-violet-900 border-violet-200",
-  en_seguimiento: "bg-pink-100 text-pink-900 border-pink-200",
+/**
+ * Cada estado se expresa con color + icono + texto. Los tonos usan tokens
+ * semánticos del design system (ver globals.css).
+ */
+const ESTILO_ESTADO: Record<EstadoResultado, { clase: string; icon: LucideIcon }> = {
+  cargado: { clase: "bg-muted text-foreground border-border", icon: FileUp },
+  en_revision: { clase: "bg-warning-soft text-warning-foreground border-warning/40", icon: ClipboardList },
+  autorizado: { clase: "bg-success-soft text-success-foreground border-success/35", icon: CheckCircle2 },
+  rechazado: { clase: "bg-danger-soft text-danger-foreground border-danger/35", icon: XCircle },
+  notificado: { clase: "bg-info-soft text-info-foreground border-info/35", icon: Bell },
+  entregado: { clase: "bg-brand-rose-pale text-brand-wine border-brand-rose-soft", icon: PackageCheck },
+  en_seguimiento: { clase: "bg-brand-wine text-primary-foreground border-brand-wine", icon: HeartHandshake },
 };
 
-export function EstadoBadge({ estado }: { estado: EstadoResultado }) {
+const base =
+  "inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-[0.8rem] font-semibold leading-none";
+
+export function EstadoBadge({ estado, className }: { estado: EstadoResultado; className?: string }) {
+  const { clase, icon: Icon } = ESTILO_ESTADO[estado];
   return (
-    <Badge variant="outline" className={cn("font-medium", COLOR_ESTADO[estado])}>
+    <span className={cn(base, clase, className)}>
+      <Icon className="size-3.5" aria-hidden />
       {ETIQUETA_ESTADO[estado]}
-    </Badge>
+    </span>
   );
 }
 
-export function ClasificacionBadge({ valor }: { valor: ClasificacionBethesda }) {
+export function ClasificacionBadge({ valor, className }: { valor: ClasificacionBethesda; className?: string }) {
   const anormal = ["ASC-US", "LSIL", "HSIL"].includes(valor);
+  const insuficiente = valor === "Insuficiente";
   return (
-    <Badge
-      variant="outline"
+    <span
       className={cn(
-        anormal
-          ? "bg-rose-50 text-rose-900 border-rose-200"
-          : valor === "Insuficiente"
-            ? "bg-orange-50 text-orange-900 border-orange-200"
-            : "bg-green-50 text-green-900 border-green-200",
+        base,
+        "font-mono tracking-tight",
+        anormal && "bg-danger-soft text-danger-foreground border-danger/35",
+        insuficiente && "bg-warning-soft text-warning-foreground border-warning/40",
+        !anormal && !insuficiente && "bg-success-soft text-success-foreground border-success/35",
+        className,
       )}
+      title={anormal ? "Hallazgo anormal" : insuficiente ? "Muestra insuficiente" : "Sin hallazgo"}
     >
+      {anormal && <AlertCircle className="size-3.5" aria-hidden />}
       {valor}
-    </Badge>
+    </span>
   );
 }
 
@@ -52,7 +74,7 @@ export function SimuladoTag({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded border border-dashed border-pink-400 bg-pink-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-pink-700",
+        "inline-flex items-center rounded-md border border-dashed border-brand-rose-soft bg-brand-rose-pale px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.08em] text-brand-wine",
         className,
       )}
     >

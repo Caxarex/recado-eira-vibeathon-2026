@@ -69,10 +69,10 @@ export function VistaPreviaDocumento({
 
   return (
     <div className="space-y-2">
-      <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950">
+      <div className="rounded-xl border border-warning/40 bg-warning-soft p-3 text-sm leading-relaxed text-warning-foreground">
         {AVISO_ALMACENAMIENTO_LOCAL}
       </div>
-      {fallo && <p className="text-sm text-red-700">{fallo}</p>}
+      {fallo && <p role="alert" className="text-sm font-medium text-danger-foreground">{fallo}</p>}
       {!url && !fallo && <p className="text-sm text-muted-foreground">Cargando vista previa local…</p>}
       {url && (
         <>
@@ -81,7 +81,7 @@ export function VistaPreviaDocumento({
             src={url}
             className={cn("w-full rounded-md border bg-white", alto)}
           />
-          <a href={url} target="_blank" rel="noreferrer" className="text-xs text-pink-800 underline">
+          <a href={url} target="_blank" rel="noreferrer" className="text-sm font-medium text-brand-wine underline underline-offset-4">
             Abrir el PDF en una pestaña
           </a>
         </>

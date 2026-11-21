@@ -53,7 +53,7 @@ export default function DetalleAutorizacion() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Encabezado
         titulo="Autorización clínica"
         desc="Decisión exclusiva de personal médico humano. Queda registrada con nombre, fecha y nota."
@@ -78,7 +78,7 @@ export default function DetalleAutorizacion() {
               onChange={(e) => setNota(e.target.value)}
             />
           </div>
-          <div className="flex items-start gap-2 rounded-md border bg-slate-50 p-3">
+          <div className="flex items-start gap-3 rounded-xl border border-brand-rose-soft bg-brand-rose-pale p-4">
             <Checkbox
               id="confirma"
               checked={confirmado}
@@ -99,7 +99,7 @@ export default function DetalleAutorizacion() {
             </Button>
           </div>
           {r.estado !== "en_revision" && (
-            <p className="text-xs text-muted-foreground">Este resultado ya no está en estado “En revisión”.</p>
+            <p className="text-sm text-muted-foreground">Este resultado ya no está en estado “En revisión”.</p>
           )}
         </CardContent>
       </Card>

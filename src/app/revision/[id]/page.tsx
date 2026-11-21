@@ -42,7 +42,7 @@ export default function DetalleRevision() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Encabezado titulo="Revisión documental" desc="Verifica el documento antes de enviarlo a autorización." />
       <AvisoRol requerido="Revisor" actual={rol} />
       <PanelResultado resultado={r} />
@@ -71,7 +71,7 @@ export default function DetalleRevision() {
             </Button>
           </div>
           {r.estado !== "cargado" && (
-            <p className="text-xs text-muted-foreground">Este resultado ya no está en estado “Cargado”.</p>
+            <p className="text-sm text-muted-foreground">Este resultado ya no está en estado “Cargado”.</p>
           )}
         </CardContent>
       </Card>

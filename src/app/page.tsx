@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ETIQUETA_ESTADO } from "@/components/estado-badge";
-import { ESTADOS_RESULTADO } from "@/contracts/types";
+import { ETIQUETA_ESTADO, EstadoBadge } from "@/components/estado-badge";
+import { AlertPanel, KpiCard, PageHeader, SectionTitle } from "@/components/ds";
+import { ESTADOS_RESULTADO, type EstadoResultado } from "@/contracts/types";
 import { useRepositorio } from "@/data/repository";
 
 const PASOS = [
@@ -16,66 +16,104 @@ const PASOS = [
   { n: 5, titulo: "Entregar y dar seguimiento", desc: "Entrega segura con código y agenda de seguimiento.", href: "/entregas", rol: "Trabajo social" },
 ];
 
+const DESTACADOS: EstadoResultado[] = ["cargado", "en_revision", "autorizado", "notificado"];
+
 export default function Inicio() {
   const { resultados, hidratado } = useRepositorio();
   const conteo = Object.fromEntries(
     ESTADOS_RESULTADO.map((e) => [e, resultados.filter((r) => r.estado === e).length]),
-  );
+  ) as Record<EstadoResultado, number>;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">RECADO – Demo interactiva</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Recorrido simulado: resultado de Papanicolaou → revisión → autorización clínica humana → notificación → entrega y seguimiento.
-          Cambia el <strong>rol simulado</strong> en la esquina superior derecha para habilitar cada paso.
-        </p>
-      </div>
+    <div className="mx-auto max-w-6xl space-y-10">
+      <section className="bg-editorial -mx-4 -mt-6 border-b px-4 pb-8 pt-8 md:-mx-8 md:-mt-8 md:px-8 md:pb-10 md:pt-10">
+        <div className="mx-auto max-w-6xl">
+          <PageHeader
+            eyebrow="Reto 4 · EIRA Movimiento Rosa"
+            title="Cada resultado llega a quien lo espera, con cuidado y a tiempo."
+            description={
+              <>
+                RECADO acompaña el recorrido de un resultado de Papanicolaou: revisión documental, autorización clínica
+                por personal humano, aviso a la paciente, entrega segura y seguimiento. Cambia el{" "}
+                <strong className="text-foreground">rol simulado</strong> arriba a la derecha para habilitar cada paso.
+              </>
+            }
+            actions={
+              <>
+                <Button nativeButton={false} render={<Link href="/casos" />}>
+                  <Phone className="size-4" /> Abrir casos demo
+                </Button>
+                <Button variant="outline" nativeButton={false} render={<Link href="/expedientes" />}>
+                  Ver expedientes <ArrowRight className="size-4" />
+                </Button>
+              </>
+            }
+          />
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Casos de la llamada demo</CardTitle>
-          <CardDescription>
-            DEMO-001 a DEMO-006, con eventos compartidos en el servidor. Ana usa DEMO-002 y Felipe usa DEMO-001.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button size="sm" variant="outline" render={<Link href="/casos" />}>
-            Abrir casos <ArrowRight className="size-3" />
+      <section className="space-y-4">
+        <SectionTitle title="Pulso del recorrido" description="Resultados ficticios en cada etapa, en este navegador." />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {DESTACADOS.map((e, i) => (
+            <KpiCard
+              key={e}
+              label={ETIQUETA_ESTADO[e]}
+              value={hidratado ? conteo[e] : "–"}
+              tone={i === 0 ? "default" : i === 1 ? "warning" : i === 2 ? "success" : "brand"}
+            />
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <span>También:</span>
+          {(["rechazado", "entregado", "en_seguimiento"] as EstadoResultado[]).map((e) => (
+            <span key={e} className="inline-flex items-center gap-1.5">
+              <EstadoBadge estado={e} />
+              <span className="numeric font-semibold text-foreground">{hidratado ? conteo[e] : "–"}</span>
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <AlertPanel
+        variant="simulation"
+        title="Casos de la llamada demo"
+        actions={
+          <Button size="sm" variant="outline" nativeButton={false} render={<Link href="/casos" />}>
+            Abrir casos <ArrowRight className="size-3.5" />
           </Button>
-        </CardContent>
-      </Card>
+        }
+      >
+        DEMO-001 a DEMO-006, con eventos compartidos en el servidor. Ana usa DEMO-002 y Felipe usa DEMO-001.
+      </AlertPanel>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-        {ESTADOS_RESULTADO.map((e) => (
-          <Card key={e} className="py-3">
-            <CardContent className="px-3">
-              <div className="text-2xl font-bold">{hidratado ? conteo[e] : "–"}</div>
-              <div className="text-xs text-muted-foreground">{ETIQUETA_ESTADO[e]}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {PASOS.map((p) => (
-          <Card key={p.n}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="flex size-6 items-center justify-center rounded-full bg-pink-600 text-xs text-white">{p.n}</span>
-                {p.titulo}
-              </CardTitle>
-              <CardDescription>{p.desc}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Rol: {p.rol}</span>
-              <Button size="sm" variant="outline" render={<Link href={p.href} />}>
-                Ir <ArrowRight className="size-3" />
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <section className="space-y-4">
+        <SectionTitle title="Recorrido en cinco pasos" description="Cada paso exige un rol concreto; así se refleja la separación de responsabilidades." />
+        <ol className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {PASOS.map((p) => (
+            <li
+              key={p.n}
+              className="group flex flex-col justify-between gap-5 rounded-2xl border bg-card p-5 shadow-card transition-shadow hover:shadow-card-hover"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="numeric grid size-9 shrink-0 place-items-center rounded-full bg-brand-wine font-heading text-sm font-bold text-primary-foreground">
+                    {p.n}
+                  </span>
+                  <h3 className="leading-tight">{p.titulo}</h3>
+                </div>
+                <p className="text-[0.95rem] leading-relaxed text-muted-foreground">{p.desc}</p>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="eyebrow">Rol · {p.rol}</span>
+                <Button size="sm" variant="secondary" nativeButton={false} render={<Link href={p.href} />}>
+                  Ir <ArrowRight className="size-3.5" />
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
     </div>
   );
 }

@@ -65,7 +65,7 @@ export default function DetalleNotificacion() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Encabezado
         titulo="Notificar disponibilidad"
         desc="Se avisa a la paciente que puede recoger su resultado. Nunca se comunica el resultado por el canal."
@@ -96,9 +96,9 @@ export default function DetalleNotificacion() {
                   <Phone className="size-4" /> Iniciar llamada demo
                 </Button>
               ) : (
-                <div className="space-y-3 rounded-md border bg-slate-50 p-4">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="size-2 animate-pulse rounded-full bg-green-500" />
+                <div className="space-y-3 rounded-xl border bg-surface-2 p-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="size-2.5 animate-pulse rounded-full bg-success motion-reduce:animate-none" aria-hidden />
                     Llamada simulada en curso · paso {pasoLlamada + 1} de {GUION_LLAMADA.length}
                   </div>
                   <p className="text-sm">
@@ -120,8 +120,8 @@ export default function DetalleNotificacion() {
 
             {(["SMS", "WhatsApp"] as const).map((c) => (
               <TabsContent key={c} value={c} className="space-y-3 pt-3">
-                <div className="rounded-md border bg-slate-50 p-3 text-sm">
-                  <div className="mb-1 text-xs text-muted-foreground">Mensaje que se habría enviado a {pac?.telefono}:</div>
+                <div className="rounded-xl border bg-surface-2 p-4 text-[0.95rem] leading-relaxed">
+                  <div className="eyebrow mb-1.5">Mensaje que se habría enviado a {pac?.telefono}:</div>
                   {mensajeTexto}
                 </div>
                 <Button disabled={!habilitado} onClick={() => registrar(mensajeTexto)}>
@@ -131,7 +131,7 @@ export default function DetalleNotificacion() {
             ))}
           </Tabs>
           {r.estado !== "autorizado" && (
-            <p className="mt-3 text-xs text-muted-foreground">Este resultado ya no está en estado “Autorizado”.</p>
+            <p className="mt-3 text-sm text-muted-foreground">Este resultado ya no está en estado “Autorizado”.</p>
           )}
         </CardContent>
       </Card>
