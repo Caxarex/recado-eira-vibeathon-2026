@@ -142,6 +142,7 @@ export const resultadosMock: ResultadoPapanicolaou[] = semillas.map((s, i) => {
       tipo: "PDF",
       tamanoKb: 180 + i * 7,
       hashSimulado: `sha256:demo${n}…`,
+      almacenamiento: "solo-metadatos",
     },
     historial,
     autorizacion: autoEv

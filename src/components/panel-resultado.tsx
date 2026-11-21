@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClasificacionBadge, EstadoBadge, SimuladoTag } from "@/components/estado-badge";
 import { HistorialResultado } from "@/components/historial-resultado";
+import { VistaPreviaDocumento } from "@/components/vista-previa-pdf";
 import type { ResultadoPapanicolaou } from "@/contracts/types";
 import { useRepositorio } from "@/data/repository";
 
@@ -23,17 +23,14 @@ export function PanelResultado({ resultado }: { resultado: ResultadoPapanicolaou
           </CardTitle>
           <CardDescription>
             {resultado.documento.nombreArchivo} · {resultado.documento.tipo} · {resultado.documento.tamanoKb} KB
+            {" · "}
+            {resultado.documento.almacenamiento === "local-navegador"
+              ? "copia local del navegador"
+              : "solo metadatos ficticios"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex aspect-[3/4] max-h-80 w-full flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed bg-slate-50 text-muted-foreground">
-            <FileText className="size-12 text-slate-300" />
-            <div className="text-sm font-medium">Vista previa simulada del PDF</div>
-            <div className="px-6 text-center text-xs">
-              En producción aquí se mostraría el documento del laboratorio. En esta demo no existe archivo real.
-            </div>
-            <div className="font-mono text-[10px]">{resultado.documento.hashSimulado}</div>
-          </div>
+          <VistaPreviaDocumento documento={resultado.documento} />
         </CardContent>
       </Card>
 

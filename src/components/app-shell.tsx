@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="sticky top-0 z-50 border-b border-pink-300 bg-pink-100 px-4 py-1.5 text-center text-xs font-semibold text-pink-900">
-        SIMULACIÓN – Datos ficticios. Ningún paciente, resultado ni envío es real.
+        SIMULACIÓN – Datos ficticios. Un PDF de prueba queda solo en este navegador; no es un repositorio clínico. Ningún paciente ni envío es real.
       </div>
       <div className="flex flex-1">
         <aside className="hidden w-64 shrink-0 border-r bg-white md:block">

@@ -27,30 +27,28 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ClasificacionBadge, EstadoBadge, SimuladoTag } from "@/components/estado-badge";
 import { HistorialResultado } from "@/components/historial-resultado";
+import { AvisoRol } from "@/components/panel-resultado";
+import { VistaPreviaDocumento } from "@/components/vista-previa-pdf";
+import { bytesAKb, validarPdf } from "@/contracts/pdf";
 import {
   CLASIFICACIONES_BETHESDA,
+  rutaOperativa,
   type ClasificacionBethesda,
-  type ResultadoPapanicolaou,
 } from "@/contracts/types";
 import { useRepositorio } from "@/data/repository";
 
-const SIGUIENTE_RUTA: Partial<Record<ResultadoPapanicolaou["estado"], (id: string) => string>> = {
-  cargado: (id) => `/revision/${id}`,
-  en_revision: (id) => `/autorizaciones/${id}`,
-  autorizado: (id) => `/notificaciones/${id}`,
-  notificado: (id) => `/entregas/${id}`,
-  entregado: (id) => `/entregas/${id}`,
-};
-
 export default function DetalleExpediente() {
   const { id } = useParams<{ id: string }>();
-  const { obtenerExpediente, obtenerPaciente, resultadosDeExpediente, agregarResultado, rol, hidratado } =
+  const { obtenerExpediente, obtenerPaciente, resultadosDeExpediente, asociarPdfAExpediente, rol, hidratado } =
     useRepositorio();
   const [abierto, setAbierto] = useState(false);
+  const [guardando, setGuardando] = useState(false);
   const [fechaToma, setFechaToma] = useState("2026-11-01");
   const [fechaResultado, setFechaResultado] = useState("2026-11-15");
   const [laboratorio, setLaboratorio] = useState("Laboratorio Ficticio A");
   const [clasificacion, setClasificacion] = useState<ClasificacionBethesda>("Negativo");
+  const [archivo, setArchivo] = useState<File | null>(null);
+  const [errorArchivo, setErrorArchivo] = useState<string | null>(null);
 
   const exp = obtenerExpediente(id);
   if (!hidratado) return null;
@@ -58,40 +56,57 @@ export default function DetalleExpediente() {
   const pac = obtenerPaciente(exp.pacienteId);
   const resultados = resultadosDeExpediente(exp.id);
 
-  const asociar = () => {
-    if (fechaResultado < fechaToma) {
-      toast.error("La fecha de resultado no puede ser anterior a la fecha de toma");
+  const elegirArchivo = async (file: File | undefined, input?: HTMLInputElement) => {
+    if (!file) {
+      setArchivo(null);
+      setErrorArchivo(null);
       return;
     }
-    const n = String(Date.now()).slice(-4);
-    agregarResultado({
-      id: `res-nuevo-${Date.now()}`,
-      expedienteId: exp.id,
-      fechaToma,
-      fechaResultado,
-      laboratorio,
-      clasificacion,
-      estado: "cargado",
-      documento: {
-        id: `doc-nuevo-${n}`,
-        nombreArchivo: `PAP-${n}.pdf`,
-        tipo: "PDF",
-        tamanoKb: 210,
-        hashSimulado: `sha256:demo${n}…`,
-      },
-      historial: [
-        {
-          fecha: new Date().toISOString(),
-          estadoAnterior: null,
-          estadoNuevo: "cargado",
-          actor: `${rol} Demo`,
-          rol,
-          nota: "Archivo simulado asociado al expediente.",
-        },
-      ],
-    });
-    setAbierto(false);
-    toast.success("Resultado asociado (simulado). Ahora aparece en la Bandeja de revisión.");
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const validacion = validarPdf({ nombreArchivo: file.name, tipoMime: file.type, bytes });
+    if (!validacion.ok) {
+      setArchivo(null);
+      setErrorArchivo(validacion.error);
+      if (input) input.value = "";
+      return;
+    }
+    setArchivo(file);
+    setErrorArchivo(null);
+  };
+
+  const asociar = async () => {
+    if (rol !== "Capturista") {
+      toast.error("Solo el rol simulado Capturista puede asociar un PDF.");
+      return;
+    }
+    if (!archivo) {
+      toast.error("Selecciona un PDF de prueba.");
+      return;
+    }
+    setGuardando(true);
+    try {
+      const bytes = new Uint8Array(await archivo.arrayBuffer());
+      const res = await asociarPdfAExpediente({
+        expedienteId: exp.id,
+        fechaToma,
+        fechaResultado,
+        laboratorio,
+        clasificacion,
+        nombreArchivo: archivo.name,
+        tipoMime: archivo.type,
+        bytes,
+      });
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      setArchivo(null);
+      setErrorArchivo(null);
+      setAbierto(false);
+      toast.success("PDF de prueba asociado. Queda en este navegador y pasa a revisión.");
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -107,14 +122,14 @@ export default function DetalleExpediente() {
           </p>
         </div>
         <Dialog open={abierto} onOpenChange={setAbierto}>
-          <DialogTrigger render={<Button />}>Asociar resultado</DialogTrigger>
-          <DialogContent>
+          <DialogTrigger render={<Button disabled={rol !== "Capturista"} />}>Asociar PDF de prueba</DialogTrigger>
+          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                Asociar resultado al expediente <SimuladoTag />
+                Asociar PDF al expediente <SimuladoTag />
               </DialogTitle>
               <DialogDescription>
-                El archivo no se sube realmente; sólo se registran sus metadatos ficticios.
+                El archivo se guarda en este navegador. No se envía a un servidor y no queda en un repositorio clínico seguro.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-3">
@@ -143,17 +158,41 @@ export default function DetalleExpediente() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="rounded-md border border-dashed bg-slate-50 p-3 text-xs text-muted-foreground">
-                Archivo simulado: <span className="font-mono">PAP-XXXX.pdf</span> (210 KB) – no se carga ningún archivo real.
+              <div className="grid gap-1.5">
+                <Label htmlFor="pdf">PDF de prueba (máximo 2 MB)</Label>
+                <Input
+                  id="pdf"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  aria-invalid={Boolean(errorArchivo)}
+                  onChange={(e) => void elegirArchivo(e.target.files?.[0], e.target)}
+                />
+                {errorArchivo && <p className="text-xs text-red-700">{errorArchivo}</p>}
+                {archivo && !errorArchivo && (
+                  <p className="text-xs text-muted-foreground">
+                    Seleccionado: <span className="font-mono">{archivo.name}</span> ({bytesAKb(archivo.size)} KB)
+                  </p>
+                )}
+              </div>
+              <div className="rounded-md border border-sky-200 bg-sky-50 p-3 text-xs text-sky-950">
+                Puedes usar el documento ficticio de la demo:{" "}
+                <a className="font-medium underline" href="/muestras/pap-ficticio.pdf" download>
+                  descargar pap-ficticio.pdf
+                </a>
+                . Después selecciónalo aquí. No contiene datos de una paciente real.
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setAbierto(false)}>Cancelar</Button>
-              <Button onClick={asociar}>Asociar (simulado)</Button>
+              <Button disabled={guardando || rol !== "Capturista" || !archivo || Boolean(errorArchivo)} onClick={() => void asociar()}>
+                {guardando ? "Guardando…" : "Asociar PDF"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
+
+      <AvisoRol requerido="Capturista" actual={rol} />
 
       <Separator />
 
@@ -163,7 +202,7 @@ export default function DetalleExpediente() {
       )}
       <div className="grid gap-4 lg:grid-cols-2">
         {resultados.map((r) => {
-          const siguiente = SIGUIENTE_RUTA[r.estado];
+          const siguiente = rutaOperativa(r.estado, r.id);
           return (
             <Card key={r.id}>
               <CardHeader>
@@ -177,9 +216,10 @@ export default function DetalleExpediente() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
+                <VistaPreviaDocumento documento={r.documento} compacto />
                 <HistorialResultado historial={r.historial} />
                 {siguiente && (
-                  <Button size="sm" variant="outline" render={<Link href={siguiente(r.id)} />}>
+                  <Button size="sm" variant="outline" render={<Link href={siguiente} />}>
                     Ir al siguiente paso
                   </Button>
                 )}

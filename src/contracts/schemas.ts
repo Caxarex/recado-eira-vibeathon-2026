@@ -5,11 +5,12 @@
  */
 import { z } from "zod";
 import {
+  ALMACENAMIENTOS_DOCUMENTO,
   CANALES_NOTIFICACION,
   CLASIFICACIONES_BETHESDA,
   ESTADOS_RESULTADO,
   ROLES,
-} from "./types";
+} from "./types.ts";
 
 const fechaISO = z
   .string()
@@ -37,12 +38,15 @@ export const expedienteSchema = z.object({
   fechaApertura: fechaISO,
 });
 
+export const almacenamientoDocumentoSchema = z.enum(ALMACENAMIENTOS_DOCUMENTO);
+
 export const documentoSchema = z.object({
   id: z.string(),
   nombreArchivo: z.string().min(1),
   tipo: z.enum(["PDF", "Imagen"]),
   tamanoKb: z.number().positive(),
   hashSimulado: z.string(),
+  almacenamiento: almacenamientoDocumentoSchema.optional(),
 });
 
 export const eventoHistorialSchema = z.object({

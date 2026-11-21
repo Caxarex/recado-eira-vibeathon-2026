@@ -38,6 +38,14 @@ export type Rol = (typeof ROLES)[number];
 export const CANALES_NOTIFICACION = ["SMS", "WhatsApp", "Llamada"] as const;
 export type CanalNotificacion = (typeof CANALES_NOTIFICACION)[number];
 
+/**
+ * `solo-metadatos`: la semilla no trae binario.
+ * `local-navegador`: PDF de prueba guardado en IndexedDB de este equipo.
+ * Ningún valor es un repositorio clínico seguro.
+ */
+export const ALMACENAMIENTOS_DOCUMENTO = ["solo-metadatos", "local-navegador"] as const;
+export type AlmacenamientoDocumento = (typeof ALMACENAMIENTOS_DOCUMENTO)[number];
+
 /** Transiciones permitidas de la máquina de estados. */
 export const TRANSICIONES: Record<EstadoResultado, EstadoResultado[]> = {
   cargado: ["en_revision"],
@@ -54,6 +62,73 @@ export function puedeTransicionar(
   hacia: EstadoResultado,
 ): boolean {
   return TRANSICIONES[desde].includes(hacia);
+}
+
+/**
+ * La entrega solo se ofrece cuando el resultado ya fue notificado.
+ * Autorizar no alcanza: antes hay revisión humana y después notificación.
+ */
+export function entregaHabilitada(estado: EstadoResultado): boolean {
+  return estado === "notificado";
+}
+
+/** Siguiente paso del flujo. Nunca apunta a entrega antes de `notificado`. */
+export function rutaOperativa(
+  estado: EstadoResultado,
+  resultadoId: string,
+): string | null {
+  switch (estado) {
+    case "cargado":
+      return `/revision/${resultadoId}`;
+    case "en_revision":
+      return `/autorizaciones/${resultadoId}`;
+    case "autorizado":
+      return `/notificaciones/${resultadoId}`;
+    case "notificado":
+    case "entregado":
+      return `/entregas/${resultadoId}`;
+    case "en_seguimiento":
+    case "rechazado":
+      return null;
+  }
+}
+
+/** Rol simulado que ejecuta cada paso. No representa una sesión autenticada. */
+export function rolDelPaso(hacia: EstadoResultado): Rol {
+  switch (hacia) {
+    case "cargado":
+      return "Capturista";
+    case "en_revision":
+      return "Revisor";
+    case "autorizado":
+    case "rechazado":
+      return "Médico autorizador";
+    case "notificado":
+    case "entregado":
+    case "en_seguimiento":
+      return "Trabajo social";
+  }
+}
+
+export function evaluarTransicion(input: {
+  estadoActual: EstadoResultado;
+  nuevoEstado: EstadoResultado;
+  rol: Rol;
+}): { ok: true } | { ok: false; error: string } {
+  if (!puedeTransicionar(input.estadoActual, input.nuevoEstado)) {
+    return {
+      ok: false,
+      error: `Transición no permitida: ${input.estadoActual} → ${input.nuevoEstado}`,
+    };
+  }
+  const esperado = rolDelPaso(input.nuevoEstado);
+  if (input.rol !== esperado) {
+    return {
+      ok: false,
+      error: `El rol simulado “${input.rol}” no realiza este paso. Corresponde a “${esperado}”. El selector del encabezado no es una sesión autenticada.`,
+    };
+  }
+  return { ok: true };
 }
 
 export interface Paciente {
@@ -79,8 +154,12 @@ export interface Documento {
   nombreArchivo: string;
   tipo: "PDF" | "Imagen";
   tamanoKb: number;
-  /** Hash ficticio para ilustrar integridad del documento. */
+  /**
+   * Huella SHA-256 calculada en el navegador para la demo.
+   * No sustituye una custodia clínica ni un sellado de tiempo.
+   */
   hashSimulado: string;
+  almacenamiento?: AlmacenamientoDocumento;
 }
 
 export interface EventoHistorial {

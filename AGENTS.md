@@ -8,6 +8,7 @@ App Next.js 15 (App Router, `src/`) + TypeScript + Tailwind v4 + shadcn/ui (esti
 - `npm run lint` – ESLint
 - `npm run build` – build de producción (también valida tipos)
 - `npx tsc --noEmit` – sólo tipos
+- `npm test` – máquina de estados, validación de PDF, indicadores y fila Excel
 
 ## Estructura
 - `src/contracts/` – **contratos compartidos** (tipos, zod, máquina de estados, indicadores). Leer `src/contracts/README.md`.
@@ -19,8 +20,9 @@ App Next.js 15 (App Router, `src/`) + TypeScript + Tailwind v4 + shadcn/ui (esti
 ## Convenciones
 - shadcn Base UI usa `render={<Link />}` en lugar de `asChild`.
 - Select/Tabs: `onValueChange` puede recibir `null`; validar antes de castear.
-- Toda transición de estado pasa por `transicionarEstado` (valida `puedeTransicionar`).
-- Rol simulado se cambia en el header; cada paso del flujo exige un rol concreto.
+- Toda transición de estado pasa por `transicionarEstado` (valida `evaluarTransicion`: máquina de estados y rol simulado del paso).
+- Rol simulado se cambia en el header. No es autenticación. Cada paso exige un rol concreto.
+- Un PDF de prueba se valida y se guarda en IndexedDB (`local-navegador`). No es custodia clínica. La entrega solo se ofrece en estado `notificado`.
 
 ## Pendiente / delegable al módulo de datos (Ana)
 - Importador Excel/CSV con `filaExcelResultadoSchema`.

@@ -7,6 +7,7 @@ Carpeta `src/contracts/` = fuente de verdad entre la app web y el módulo de dat
 | `types.ts` | Tipos TypeScript de todas las entidades + máquina de estados (`TRANSICIONES`, `puedeTransicionar`). |
 | `schemas.ts` | Esquemas **zod** espejo. Úsalos para validar filas de Excel/CSV antes de cargarlas. |
 | `indicadores.ts` | Tipo `IndicadorResumen` y un cálculo de referencia (`calcularIndicadores`) que Ana puede reemplazar. |
+| `pdf.ts` | Validación de un PDF de prueba (tipo, formato, tamaño) y armado del resultado en estado `cargado`. El binario no entra en este contrato. |
 
 > Todos los datos de la demo son **ficticios**. No usar datos reales de pacientes.
 
@@ -15,7 +16,7 @@ Carpeta `src/contracts/` = fuente de verdad entre la app web y el módulo de dat
 - **Paciente**: `id, nombre, curp (18 chars), fechaNacimiento, telefono, municipio`.
 - **Expediente**: `id, folio, pacienteId, unidadMedica, fechaApertura`.
 - **ResultadoPapanicolaou**: `id, expedienteId, fechaToma, fechaResultado, laboratorio, clasificacion, estado, documento, historial[]` y opcionales `autorizacion, notificacion, entrega, seguimiento`.
-- **Documento**: metadatos del PDF/imagen (`nombreArchivo, tipo, tamanoKb, hashSimulado`). No se almacenan binarios en la demo.
+- **Documento**: metadatos del PDF (`nombreArchivo, tipo, tamanoKb, hashSimulado, almacenamiento`). `solo-metadatos` no tiene archivo. `local-navegador` apunta a un PDF guardado en IndexedDB de este equipo. Ninguno es un repositorio clínico seguro. El binario no se guarda en `localStorage`.
 - **EventoHistorial**: cada cambio de estado con `actor, rol, fecha, nota`.
 
 ## Clasificación (Bethesda simplificada)

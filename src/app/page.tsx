@@ -9,7 +9,7 @@ import { ESTADOS_RESULTADO } from "@/contracts/types";
 import { useRepositorio } from "@/data/repository";
 
 const PASOS = [
-  { n: 1, titulo: "Asociar resultado", desc: "El capturista vincula el PDF del laboratorio a un expediente.", href: "/expedientes", rol: "Capturista" },
+  { n: 1, titulo: "Asociar PDF de prueba", desc: "El capturista elige un PDF ficticio. Se guarda solo en este navegador, no en un repositorio clínico.", href: "/expedientes", rol: "Capturista" },
   { n: 2, titulo: "Revisar documento", desc: "El revisor verifica legibilidad y coincidencia de datos.", href: "/revision", rol: "Revisor" },
   { n: 3, titulo: "Autorizar clínicamente", desc: "Un médico humano autoriza o rechaza con nota obligatoria.", href: "/autorizaciones", rol: "Médico autorizador" },
   { n: 4, titulo: "Notificar disponibilidad", desc: "Se simula SMS / WhatsApp / llamada a la paciente.", href: "/notificaciones", rol: "Trabajo social" },

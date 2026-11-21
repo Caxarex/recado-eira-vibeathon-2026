@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SimuladoTag, fechaCorta } from "@/components/estado-badge";
+import { ETIQUETA_ESTADO, SimuladoTag, fechaCorta } from "@/components/estado-badge";
 import { AvisoRol, Encabezado, PanelResultado } from "@/components/panel-resultado";
+import { entregaHabilitada, rutaOperativa } from "@/contracts/types";
 import { useRepositorio } from "@/data/repository";
 
 const ACTOR = "Trabajo Social Demo";
@@ -27,6 +29,8 @@ export default function DetalleEntrega() {
   if (!r) return <p className="text-sm text-muted-foreground">Resultado no encontrado.</p>;
 
   const esTS = rol === "Trabajo social";
+  const puedeEntregar = entregaHabilitada(r.estado);
+  const siguiente = rutaOperativa(r.estado, r.id);
   const anormal = ["ASC-US", "LSIL", "HSIL"].includes(r.clasificacion);
   const motivoSugerido = anormal
     ? "Referencia a colposcopía y cita de control"
@@ -66,7 +70,30 @@ export default function DetalleEntrega() {
       <AvisoRol requerido="Trabajo social" actual={rol} />
       <PanelResultado resultado={r} />
 
-      {r.estado === "notificado" && (
+      {!puedeEntregar && r.estado !== "entregado" && r.estado !== "en_seguimiento" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Entrega no disponible</CardTitle>
+            <CardDescription>
+              Este resultado está en «{ETIQUETA_ESTADO[r.estado]}». La interfaz no ofrece la entrega
+              antes de la autorización clínica humana y de la notificación.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {siguiente ? (
+              <Button variant="outline" render={<Link href={siguiente} />}>
+                Ir al paso que corresponde
+              </Button>
+            ) : (
+              <Button variant="outline" render={<Link href={`/expedientes/${r.expedienteId}`} />}>
+                Volver al expediente
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {puedeEntregar && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">Entrega del resultado <SimuladoTag /></CardTitle>
