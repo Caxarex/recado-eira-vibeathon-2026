@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RECADO – EIRA Movimiento Rosa
 
-## Getting Started
+Demo interactiva (Vibeathon 2026) del recorrido de un resultado de Papanicolaou:
 
-First, run the development server:
+**Asociar a expediente → Revisión documental → Autorización clínica humana → Notificación → Entrega segura → Seguimiento**
+
+> **SIMULACIÓN.** Todos los pacientes, CURP, teléfonos, unidades y laboratorios son ficticios. No se envía ningún SMS, WhatsApp ni llamada; no se almacena ningún archivo real.
+
+## Correr la demo
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cómo recorrer el flujo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Arriba a la derecha selecciona el **rol simulado**. Cada paso requiere un rol:
+   - Capturista → asociar resultado (`/expedientes/[id]`)
+   - Revisor → checklist y enviar a autorización (`/revision`)
+   - Médico autorizador → autorizar / rechazar con nota y confirmación humana (`/autorizaciones`)
+   - Trabajo social → notificar (llamada demo, SMS, WhatsApp), entregar con código y agendar seguimiento (`/notificaciones`, `/entregas`)
+2. El historial de cada resultado se ve en su expediente.
+3. El botón ↺ del header reinicia la demo a los datos iniciales. El estado se guarda en `localStorage`.
 
-## Learn More
+## Contratos compartidos
 
-To learn more about Next.js, take a look at the following resources:
+Ver [`src/contracts/README.md`](src/contracts/README.md). Son la base para el módulo de datos / Excel / indicadores.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 15 · TypeScript · Tailwind CSS v4 · shadcn/ui · zod · sonner
