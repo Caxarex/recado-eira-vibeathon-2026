@@ -189,15 +189,19 @@ export function decidirDocumento(
   return { ok: true, tipoEvento: "acceso_pdf" };
 }
 
+const EVENTOS_DE_ENTREGA_CLINICA = new Set<TipoEvento>();
+
 export function entregaCompletada(eventos: EventoCaso[], caseId: string): boolean {
-  return eventos.some((e) => e.caseId === caseId && e.tipo === "recepcion_aviso");
+  return eventos.some((e) => e.caseId === caseId && EVENTOS_DE_ENTREGA_CLINICA.has(e.tipo));
 }
 
 export function estadoVisible(caso: CasoOperativo, eventos: EventoCaso[]): string {
-  if (entregaCompletada(eventos, caso.caseId)) return "Entregado";
   if (caso.escaladoHumano) return "Escalado a seguimiento humano";
   if (eventos.some((e) => e.caseId === caso.caseId && e.tipo === "acompanamiento")) {
     return "Acompañamiento solicitado";
+  }
+  if (eventos.some((e) => e.caseId === caso.caseId && e.tipo === "recepcion_aviso")) {
+    return "Aviso recibido";
   }
   if (
     caso.pendienteSeguimiento ||
@@ -216,7 +220,9 @@ export function metricasDe(eventos: EventoCaso[]): MetricasCasos {
     recepciones: recepciones.length,
     accesosPdf: eventos.filter((e) => e.tipo === "acceso_pdf").length,
     acompanamientos: eventos.filter((e) => e.tipo === "acompanamiento").length,
-    entregasCompletadas: new Set(recepciones.map((e) => e.caseId)).size,
+    entregasCompletadas: new Set(
+      eventos.filter((e) => EVENTOS_DE_ENTREGA_CLINICA.has(e.tipo)).map((e) => e.caseId),
+    ).size,
   };
 }
 

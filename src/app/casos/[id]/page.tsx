@@ -246,6 +246,7 @@ export default function DetalleCaso() {
   if (!caso) return <p className="text-sm text-muted-foreground">Cargando el caso desde el servidor…</p>;
 
   const entregado = entregaCompletada(eventos, caso.caseId);
+  const avisoRecibido = eventos.some((e) => e.tipo === "recepcion_aviso");
   const metricas = metricasDe(eventos);
   const fase = faseDe(caso, eventos);
   const bloqueo =
@@ -261,7 +262,7 @@ export default function DetalleCaso() {
           <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-pink-900">Dato sintético</span>
         </h1>
         <p className="text-sm text-muted-foreground">
-          Escenario demo: {caso.demo.scenario}. Estado: {estadoVisible(caso, eventos)}. Entrega completada: {entregado ? "sí" : "no"}.
+          Escenario demo: {caso.demo.scenario}. Estado: {estadoVisible(caso, eventos)}. Entrega del resultado: {entregado ? "sí" : "no"}.
         </p>
       </div>
 
@@ -425,7 +426,7 @@ export default function DetalleCaso() {
               <p>{OPCIONES_LLAMADA}</p>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" disabled={ocupado} onClick={() => void enviar("confirmar-recepcion")}>
-                  {entregado ? "Repetir confirmación de recepción" : "Confirmar recepción del aviso"}
+                  {avisoRecibido ? "Repetir confirmación de recepción" : "Confirmar recepción del aviso"}
                 </Button>
                 <Button type="button" variant="outline" disabled={ocupado} onClick={() => setPedirBarrera((v) => !v)}>
                   Solicitar acompañamiento

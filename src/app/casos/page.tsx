@@ -96,11 +96,11 @@ export default function CasosDemo() {
           <Tarjeta titulo="Recepciones del aviso" valor={estado.metricas.recepciones} />
           <Tarjeta titulo="Accesos al PDF" valor={estado.metricas.accesosPdf} />
           <Tarjeta titulo="Acompañamientos" valor={estado.metricas.acompanamientos} />
-          <Tarjeta titulo="Entregas completadas" valor={estado.metricas.entregasCompletadas} />
+          <Tarjeta titulo="Entregas del resultado" valor={estado.metricas.entregasCompletadas} />
         </div>
       )}
       <p className="text-xs text-muted-foreground">
-        Pedir acompañamiento no suma una entrega. La entrega completada es solo la recepción confirmada del aviso.
+        Confirmar el aviso, abrir el PDF o pedir transporte no cuenta como entrega del resultado. Esta demo no registra esa entrega.
       </p>
 
       <div className="grid gap-3">
@@ -122,7 +122,7 @@ export default function CasosDemo() {
                 <div>
                   <div>{estado ? estadoVisible(caso, estado.eventos) : "…"}</div>
                   <div className="text-muted-foreground">
-                    Entrega completada: {entregado ? "sí" : "no"}
+                    Entrega del resultado: {entregado ? "sí" : "no"}
                   </div>
                 </div>
                 <Button size="sm" variant="outline" render={<Link href={`/casos/${caso.caseId}`} />}>

@@ -17,6 +17,7 @@ import {
   efectoSinRespuesta,
   efectoVerificar,
   entregaCompletada,
+  estadoVisible,
   MENSAJE_APROBADO_DEMO,
   metricasDe,
   SIN_RESPUESTA_TEXTO,
@@ -134,9 +135,12 @@ describe("reglas de acceso y eventos distintos", () => {
       juntos.map((e) => e.tipo),
       ["acompanamiento", "recepcion_aviso"],
     );
-    assert.equal(metricasDe(juntos).entregasCompletadas, 1);
+    assert.equal(metricasDe(juntos).recepciones, 1);
+    assert.equal(metricasDe(juntos).entregasCompletadas, 0);
     assert.equal(metricasDe(juntos).acompanamientos, 1);
     assert.equal(metricasDe(juntos).accesosPdf, 0);
+    assert.equal(entregaCompletada(juntos, caso.caseId), false);
+    assert.equal(estadoVisible(recepción.caso, juntos), "Acompañamiento solicitado");
     assert.equal(metricasDe(primero.nuevosEventos).entregasCompletadas, 0);
   });
 
@@ -236,7 +240,9 @@ describe("persistencia en archivo", () => {
     const recien = crearAlmacen({ directorio: path.dirname(almacen.archivo), semillaPath: SEMILLA });
     const recargado = await recien.leer();
     assert.equal(casoDe("DEMO-001", recargado.casos).identidadVerificada, true);
-    assert.equal(recargado.metricas.entregasCompletadas, 1);
+    assert.equal(recargado.metricas.recepciones, 1);
+    assert.equal(recargado.metricas.entregasCompletadas, 0);
+    assert.equal(estadoVisible(casoDe("DEMO-001", recargado.casos), recargado.eventos), "Aviso recibido");
 
     await almacen.iniciar("DEMO-002");
     await almacen.verificar("DEMO-002", CLAVE_DEMO);
@@ -252,8 +258,10 @@ describe("persistencia en archivo", () => {
       repetido.eventos.find((e) => e.caseId === "DEMO-002" && e.tipo === "acompanamiento")?.id,
     );
     assert.equal(entregaCompletada(repetido.eventos, "DEMO-002"), false);
+    assert.equal(estadoVisible(casoDe("DEMO-002", repetido.casos), repetido.eventos), "Acompañamiento solicitado");
     assert.equal(repetido.metricas.acompanamientos, 1);
-    assert.equal(repetido.metricas.entregasCompletadas, 1);
+    assert.equal(repetido.metricas.recepciones, 1);
+    assert.equal(repetido.metricas.entregasCompletadas, 0);
   });
 
   it("archiva eventos al restaurar y no borra otro caso ni la nota", async () => {
