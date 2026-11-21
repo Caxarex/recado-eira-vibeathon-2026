@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/contracts/critico.test.ts"
+    "test": "node --test src/contracts/critico.test.ts src/contracts/casos-ana.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

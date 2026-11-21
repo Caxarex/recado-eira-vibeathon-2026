@@ -32,6 +32,20 @@ export default function Inicio() {
         </p>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Casos de la llamada demo</CardTitle>
+          <CardDescription>
+            DEMO-001 a DEMO-006, con eventos compartidos en el servidor. Ana usa DEMO-002 y Felipe usa DEMO-001.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button size="sm" variant="outline" render={<Link href="/casos" />}>
+            Abrir casos <ArrowRight className="size-3" />
+          </Button>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
         {ESTADOS_RESULTADO.map((e) => (
           <Card key={e} className="py-3">

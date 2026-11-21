@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Devin local config
 .devin/config.local.json
+
+# Estado compartido de los casos DEMO. La semilla vive en src/data/casos-demo.json.
+/data/servidor/

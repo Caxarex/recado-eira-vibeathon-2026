@@ -1,0 +1,92 @@
+[
+  {
+    "caseId": "DEMO-001",
+    "alias": "Persona demo 01",
+    "synthetic": true,
+    "contactConsent": true,
+    "administrativeReviewed": true,
+    "medicalAuthorized": true,
+    "approvedScript": "Mensaje de demostración: tu documento está disponible. Puedes solicitar acompañamiento para el siguiente paso.",
+    "demo": {
+      "identityScenario": "Correcta",
+      "scenario": "Entrega exitosa",
+      "expected": "Recepción confirmada solo al pulsar confirmar",
+      "barrier": null
+    }
+  },
+  {
+    "caseId": "DEMO-002",
+    "alias": "Persona demo 02",
+    "synthetic": true,
+    "contactConsent": true,
+    "administrativeReviewed": true,
+    "medicalAuthorized": true,
+    "approvedScript": "Mensaje de demostración: tu documento está disponible. Puedes solicitar acompañamiento para el siguiente paso.",
+    "demo": {
+      "identityScenario": "Correcta",
+      "scenario": "Apoyo por transporte",
+      "expected": "Crear seguimiento; no contar entrega por pedir ayuda",
+      "barrier": "TRANSPORT"
+    }
+  },
+  {
+    "caseId": "DEMO-003",
+    "alias": "Persona demo 03",
+    "synthetic": true,
+    "contactConsent": true,
+    "administrativeReviewed": true,
+    "medicalAuthorized": false,
+    "approvedScript": "",
+    "demo": {
+      "identityScenario": "Correcta",
+      "scenario": "Sin autorización médica",
+      "expected": "Bloquear llamada de entrega y acceso al documento",
+      "barrier": null
+    }
+  },
+  {
+    "caseId": "DEMO-004",
+    "alias": "Persona demo 04",
+    "synthetic": true,
+    "contactConsent": true,
+    "administrativeReviewed": true,
+    "medicalAuthorized": true,
+    "approvedScript": "Mensaje de demostración: tu documento está disponible. Puedes solicitar acompañamiento para el siguiente paso.",
+    "demo": {
+      "identityScenario": "Incorrecta",
+      "scenario": "Identidad incorrecta",
+      "expected": "No revelar mensaje; 3 errores requieren seguimiento humano",
+      "barrier": null
+    }
+  },
+  {
+    "caseId": "DEMO-005",
+    "alias": "Persona demo 05",
+    "synthetic": true,
+    "contactConsent": false,
+    "administrativeReviewed": true,
+    "medicalAuthorized": true,
+    "approvedScript": "Mensaje de demostración: tu documento está disponible. Puedes solicitar acompañamiento para el siguiente paso.",
+    "demo": {
+      "identityScenario": "Correcta",
+      "scenario": "Sin consentimiento",
+      "expected": "Bloquear contacto",
+      "barrier": null
+    }
+  },
+  {
+    "caseId": "DEMO-006",
+    "alias": "Persona demo 06",
+    "synthetic": true,
+    "contactConsent": true,
+    "administrativeReviewed": true,
+    "medicalAuthorized": true,
+    "approvedScript": "Mensaje de demostración: tu documento está disponible. Puedes solicitar acompañamiento para el siguiente paso.",
+    "demo": {
+      "identityScenario": "Sin respuesta",
+      "scenario": "Nadie contesta",
+      "expected": "Sin recepción confirmada; pendiente de seguimiento",
+      "barrier": null
+    }
+  }
+]

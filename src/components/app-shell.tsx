@@ -9,6 +9,7 @@ import {
   Home,
   LineChart,
   PackageCheck,
+  Phone,
   ShieldCheck,
   RotateCcw,
 } from "lucide-react";
@@ -27,6 +28,7 @@ import { toast } from "sonner";
 
 const NAV = [
   { href: "/", label: "Inicio", icon: Home },
+  { href: "/casos", label: "Casos demo", icon: Phone },
   { href: "/expedientes", label: "Expedientes", icon: FolderOpen },
   { href: "/revision", label: "Bandeja de revisión", icon: ClipboardCheck },
   { href: "/autorizaciones", label: "Autorizaciones", icon: ShieldCheck },
@@ -42,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="sticky top-0 z-50 border-b border-pink-300 bg-pink-100 px-4 py-1.5 text-center text-xs font-semibold text-pink-900">
-        SIMULACIÓN – Datos ficticios. Un PDF de prueba queda solo en este navegador; no es un repositorio clínico. Ningún paciente ni envío es real.
+        SIMULACIÓN – Datos ficticios. Los casos DEMO y sus eventos se guardan en el servidor de esta demo. El PDF que el capturista asocia a un expediente sigue solo en este navegador. Ningún paciente ni envío es real.
       </div>
       <div className="flex flex-1">
         <aside className="hidden w-64 shrink-0 border-r bg-white md:block">
@@ -93,9 +95,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 size="sm"
                 onClick={() => {
                   reiniciarDemo();
-                  toast.info("Demo reiniciada a los datos ficticios iniciales");
+                  toast.info("Se reiniciaron los expedientes de este navegador. Los casos DEMO del servidor no se borraron.");
                 }}
-                title="Reiniciar demo"
+                title="Reinicia los expedientes locales. No borra los casos DEMO del servidor."
               >
                 <RotateCcw className="size-4" />
               </Button>

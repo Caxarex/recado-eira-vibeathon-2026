@@ -1,7 +1,7 @@
 # RECADO – EIRA Movimiento Rosa (demo Vibeathon 2026)
 
 App Next.js 15 (App Router, `src/`) + TypeScript + Tailwind v4 + shadcn/ui (estilo base-nova, primitivas Base UI) + zod + sonner.
-**Todo es simulación con datos ficticios.** No hay backend, login ni envíos reales.
+**Todo es simulación con datos ficticios.** No hay login ni envíos reales. Los casos DEMO y sus eventos se guardan en el servidor (`data/servidor/casos.json`). El resto de expedientes sigue en el navegador.
 
 ## Comandos
 - `npm run dev` – servidor de desarrollo (http://localhost:3000)
@@ -13,7 +13,8 @@ App Next.js 15 (App Router, `src/`) + TypeScript + Tailwind v4 + shadcn/ui (esti
 ## Estructura
 - `src/contracts/` – **contratos compartidos** (tipos, zod, máquina de estados, indicadores). Leer `src/contracts/README.md`.
 - `src/data/mock/` – datos ficticios iniciales.
-- `src/data/repository.tsx` – Context + useReducer + localStorage (`recado-demo-v1`). Única vía para mutar estado.
+- `src/data/repository.tsx` – Context + useReducer + localStorage (`recado-demo-v1`). Única vía para mutar expedientes en el navegador.
+- `src/data/casos-servidor.ts` y `data/servidor/casos.json` – casos DEMO y eventos compartidos. Preparar añade los que falten. Restaurar archiva los eventos de DEMO-001…006 y no borra otros casos ni las notas.
 - `src/components/` – shell, badges, tabla, panel de resultado, historial. `components/ui/` es shadcn (no editar a mano salvo necesidad).
 - `src/app/` – rutas: `/`, `/expedientes[/id]`, `/revision[/id]`, `/autorizaciones[/id]`, `/notificaciones[/id]`, `/entregas[/id]`, `/indicadores`.
 

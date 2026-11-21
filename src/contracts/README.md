@@ -8,6 +8,7 @@ Carpeta `src/contracts/` = fuente de verdad entre la app web y el módulo de dat
 | `schemas.ts` | Esquemas **zod** espejo. Úsalos para validar filas de Excel/CSV antes de cargarlas. |
 | `indicadores.ts` | Tipo `IndicadorResumen` y un cálculo de referencia (`calcularIndicadores`) que Ana puede reemplazar. |
 | `pdf.ts` | Validación de un PDF de prueba (tipo, formato, tamaño) y armado del resultado en estado `cargado`. El binario no entra en este contrato. |
+| `casos-ana.ts` | Casos DEMO-001…006 y eventos. La recepción del aviso, el acceso al PDF y el acompañamiento no se mezclan. Los IDs y alias salen de `src/data/casos-demo.json`. |
 
 > Todos los datos de la demo son **ficticios**. No usar datos reales de pacientes.
 
